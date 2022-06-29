@@ -1,0 +1,1 @@
+bash ./scripts/init_db.sh
