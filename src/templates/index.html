@@ -12,10 +12,22 @@
   </head>
   <body>
     <div class="container mt-5 col-4">
+      {% if messages %}
+      {% for message in messages %}
+      <div class="alert alert-success alert-dismissible fade show mt-4" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+              <span class="sr-only">Close</span>
+          </button>
+          {{ message }}
+      </div>
+      {% endfor %}
+      {% endif %}
     <form method="POST" autocomplete="off">
       {% csrf_token %}
         <div class="form-group">
-            <input list="browsers" class="form-control" name="category" id="browser">
+          <label for="fname">Category</label><br>
+            <input list="browsers" class="form-control" name="category" id="browser" placeholder="Please Select or insert a Category.">
             <datalist id="browsers">
               {% for cat in category %}
                 <option value="{{cat.name}}">
@@ -23,7 +35,8 @@
             </datalist>
         </div>
         <div class="form-group">
-            <input list="browsers2" class="form-control" name="subcategory" id="browser2">
+          <label for="fname">Sub Category</label><br>
+            <input list="browsers2" class="form-control" name="subcategory" id="browser2" placeholder="Please Select or insert a Sub Category.">
             <datalist id="browsers2">
                 {% for cat in subcategory %}
                     <option dep="{{cat.category}}" value="{{cat.name}}">
@@ -31,7 +44,8 @@
             </datalist>
         </div>
         <div class="form-group">
-          <input class="form-control" name="name">
+          <label for="fname">Product Name</label><br>
+          <input class="form-control" name="name" placeholder="Please insert a Product Name.">
       </div>
        
         <button type="submit" class="btn btn-primary">Submit</button>

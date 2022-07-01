@@ -1,10 +1,9 @@
 from ast import Sub
-from unicodedata import category
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render, redirect
 from .models import Category, SubCategory , Product
-from .forms import ProductForm
+from django.db import IntegrityError
+from django.contrib import messages
 
-# Create your views here.
 
 def datalist(request):
     categorylist = Category.objects.all()
@@ -13,26 +12,18 @@ def datalist(request):
         name=request.POST.get("name")
         category=request.POST.get("category")
         subcategory=request.POST.get("subcategory")
-        # print(name,category,subcategory)
         if not Category.objects.filter(name=category).exists():
             category = Category.objects.create(name=category)
-            if not SubCategory.objects.filter(name=subcategory).exists():
-                subcategory = SubCategory.objects.create(name=subcategory, category=category)
-                Product.objects.create(name=name, category=category,subcategory=subcategory)
-
         else:
             category = Category.objects.get(name=category)
-            if not SubCategory.objects.filter(name=subcategory).exists():
-                subcategory = SubCategory.objects.create(name=subcategory, category=category)
-                Product.objects.create(name=name, category=category,subcategory=subcategory)
-            else:
-                subcategory = SubCategory.objects.get(name=subcategory)
-                try:
-                    Product.objects.create(name=name, category=category, subcategory=subcategory)
-                except Exception as e:
-                    return HttpResponse("unique problem")
-    
-        
-        
-       
+        if not SubCategory.objects.filter(name=subcategory).exists():
+            subcategory = SubCategory.objects.create(name=subcategory, category=category)
+        else:
+            subcategory = SubCategory.objects.get(name=subcategory)
+        try:
+            Product.objects.create(name=name, category=category, subcategory=subcategory)
+            messages.success(request, 'successfully created ')
+        except IntegrityError as e:
+            messages.success(request, 'Already exists this product with category and sub category')
+            return redirect("datalist:datalist")
     return render(request, "index.html", {"category":categorylist, "subcategory":subcategorylist})
